@@ -139,7 +139,7 @@ function createPhoto(imageSrc, captionText){
     const img = document.createElement('img');
     img.src = imageSrc;
 img.onclick = function(){
-    window.open(imageSrc, "_blank");
+   window.location.href = imageSrc;
 };
     const caption = document.createElement('div');
     caption.className = 'caption';
