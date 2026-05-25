@@ -138,7 +138,9 @@ function createPhoto(imageSrc, captionText){
 
     const img = document.createElement('img');
     img.src = imageSrc;
-
+img.onclick = function(){
+    window.open(imageSrc, "_blank");
+};
     const caption = document.createElement('div');
     caption.className = 'caption';
     caption.innerText = captionText;
