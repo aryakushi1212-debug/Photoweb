@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>PhotoWeb</title>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Photoweb</title>
 
 <style>
 
@@ -39,17 +40,17 @@ h1{
     margin-bottom:20px;
 }
 
-input[type="file"]{
-    margin:20px 0;
-    padding:10px;
-}
-
 input[type="text"]{
     width:80%;
     padding:10px;
     border-radius:8px;
     border:1px solid #ccc;
     margin-bottom:15px;
+}
+
+input[type="file"]{
+    margin:20px 0;
+    padding:10px;
 }
 
 .gallery{
@@ -69,6 +70,8 @@ input[type="text"]{
     object-fit:cover;
     border-radius:10px;
     border:3px solid #0077ff;
+    transition:0.3s;
+    cursor:pointer;
 }
 
 .caption{
@@ -89,6 +92,7 @@ input[type="text"]{
 }
 
 </style>
+
 </head>
 
 <body>
@@ -99,25 +103,40 @@ input[type="text"]{
 
 <p>Upload and view your photos anytime</p>
 
-<input type="text" id="captionInput" placeholder="Enter text for image">
+<input type="text" id="captionInput"
+placeholder="Enter text for image">
 
-<input type="file" id="photoInput" accept="image/*" multiple>
+<br>
+
+<input type="file" id="photoInput"
+accept="image/*" multiple>
 
 <div class="gallery" id="gallery"></div>
 
 <p class="note">
-Photos and text will stay even after refresh.
+Photos and text stay even after refresh.
 </p>
 
 </div>
+
 <script>
 
-const photoInput = document.getElementById('photoInput');
-const gallery = document.getElementById('gallery');
-const captionInput = document.getElementById('captionInput');
+const photoInput =
+document.getElementById('photoInput');
+
+const gallery =
+document.getElementById('gallery');
+
+const captionInput =
+document.getElementById('captionInput');
 
 function savePhotos(data){
-    localStorage.setItem("photoData", JSON.stringify(data));
+
+    localStorage.setItem(
+        "photoData",
+        JSON.stringify(data)
+    );
+
 }
 
 function loadPhotos(){
@@ -125,30 +144,54 @@ function loadPhotos(){
     const saved =
     JSON.parse(localStorage.getItem("photoData")) || [];
 
-    saved.forEach(item=>{
+    saved.forEach(item => {
+
         createPhoto(item.image,item.caption);
+
     });
 
 }
 
 function createPhoto(imageSrc, captionText){
 
-    const box = document.createElement('div');
+    const box =
+    document.createElement('div');
+
     box.className = 'photo-box';
 
-    const img = document.createElement('img');
+    const img =
+    document.createElement('img');
+
     img.src = imageSrc;
-img.onclick = function(){
-   window.location.href = imageSrc;
-};
-    const caption = document.createElement('div');
+
+    const caption =
+    document.createElement('div');
+
     caption.className = 'caption';
+
     caption.innerText = captionText;
 
     box.appendChild(img);
+
     box.appendChild(caption);
 
     gallery.appendChild(box);
+
+    box.onclick = function(){
+
+        if(img.style.height === "400px"){
+
+            img.style.height = "150px";
+
+        }
+        else{
+
+            img.style.height = "400px";
+
+        }
+
+    };
+
 }
 
 photoInput.addEventListener('change', function(){
@@ -168,12 +211,16 @@ photoInput.addEventListener('change', function(){
 
             reader.onload = function(e){
 
-                const imageData = e.target.result;
+                const imageData =
+                e.target.result;
 
                 const captionText =
                 captionInput.value;
 
-                createPhoto(imageData, captionText);
+                createPhoto(
+                    imageData,
+                    captionText
+                );
 
                 saved.push({
                     image:imageData,
@@ -193,6 +240,7 @@ photoInput.addEventListener('change', function(){
 });
 
 window.onload = loadPhotos;
+
 </script>
 
 </body>
