@@ -110,30 +110,51 @@ Photos and text will stay even after refresh.
 </p>
 
 </div>
-
 <script>
 
 const photoInput = document.getElementById('photoInput');
 const gallery = document.getElementById('gallery');
 const captionInput = document.getElementById('captionInput');
 
-window.onload = function(){
+function savePhotos(data){
+    localStorage.setItem("photoData", JSON.stringify(data));
+}
 
-    let savedPhotos =
-    JSON.parse(localStorage.getItem('photos')) || [];
+function loadPhotos(){
 
-    savedPhotos.forEach(item => {
+    const saved =
+    JSON.parse(localStorage.getItem("photoData")) || [];
+
+    saved.forEach(item=>{
         createPhoto(item.image,item.caption);
     });
 
-};
+}
 
-photoInput.addEventListener('change',function(){
+function createPhoto(imageSrc, captionText){
+
+    const box = document.createElement('div');
+    box.className = 'photo-box';
+
+    const img = document.createElement('img');
+    img.src = imageSrc;
+
+    const caption = document.createElement('div');
+    caption.className = 'caption';
+    caption.innerText = captionText;
+
+    box.appendChild(img);
+    box.appendChild(caption);
+
+    gallery.appendChild(box);
+}
+
+photoInput.addEventListener('change', function(){
 
     const files = this.files;
 
-    let savedPhotos =
-    JSON.parse(localStorage.getItem('photos')) || [];
+    let saved =
+    JSON.parse(localStorage.getItem("photoData")) || [];
 
     for(let i=0;i<files.length;i++){
 
@@ -147,19 +168,17 @@ photoInput.addEventListener('change',function(){
 
                 const imageData = e.target.result;
 
-                const captionText = captionInput.value;
+                const captionText =
+                captionInput.value;
 
-                createPhoto(imageData,captionText);
+                createPhoto(imageData, captionText);
 
-                savedPhotos.push({
+                saved.push({
                     image:imageData,
                     caption:captionText
                 });
 
-                localStorage.setItem(
-                    'photos',
-                    JSON.stringify(savedPhotos)
-                );
+                savePhotos(saved);
 
             };
 
@@ -171,30 +190,7 @@ photoInput.addEventListener('change',function(){
 
 });
 
-function createPhoto(imageSrc,captionText){
-
-    const box = document.createElement('div');
-
-    box.className = 'photo-box';
-
-    const img = document.createElement('img');
-
-    img.src = imageSrc;
-
-    const caption = document.createElement('div');
-
-    caption.className = 'caption';
-
-    caption.innerText = captionText;
-
-    box.appendChild(img);
-
-    box.appendChild(caption);
-
-    gallery.appendChild(box);
-
-}
-
+window.onload = loadPhotos;
 </script>
 
 </body>
