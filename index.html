@@ -1,98 +1,201 @@
-index.html
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PhotoWeb</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }body {
-  background: linear-gradient(to right, #4facfe, #00f2fe);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>PhotoWeb</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
 }
 
-.container {
-  background: white;
-  width: 90%;
-  max-width: 700px;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  text-align: center;
+body{
+    background:linear-gradient(to right,#4facfe,#00f2fe);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
 }
 
-h1 {
-  color: #0077ff;
-  margin-bottom: 20px;
+.container{
+    background:white;
+    width:90%;
+    max-width:700px;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+    text-align:center;
 }
 
-input[type="file"] {
-  margin: 20px 0;
-  padding: 10px;
+h1{
+    color:#0077ff;
+    margin-bottom:20px;
 }
 
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
-  margin-top: 20px;
+input[type="file"]{
+    margin:20px 0;
+    padding:10px;
 }
 
-.gallery img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 10px;
-  border: 3px solid #0077ff;
+input[type="text"]{
+    width:80%;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    margin-bottom:15px;
 }
 
-.note {
-  margin-top: 15px;
-  color: gray;
-  font-size: 14px;
+.gallery{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:15px;
+    margin-top:20px;
 }
 
-  </style>
+.photo-box{
+    position:relative;
+}
+
+.photo-box img{
+    width:100%;
+    height:150px;
+    object-fit:cover;
+    border-radius:10px;
+    border:3px solid #0077ff;
+}
+
+.caption{
+    position:absolute;
+    bottom:10px;
+    left:10px;
+    background:rgba(0,0,0,0.6);
+    color:white;
+    padding:5px 10px;
+    border-radius:5px;
+    font-size:14px;
+}
+
+.note{
+    margin-top:15px;
+    color:gray;
+    font-size:14px;
+}
+
+</style>
 </head>
-<body>  <div class="container">
-    <h1>PhotoWeb</h1>
-    <p>Upload and view your photos anytime</p><input type="file" id="photoInput" accept="image/*" multiple />
+
+<body>
+
+<div class="container">
+
+<h1>Photoweb</h1>
+
+<p>Upload and view your photos anytime</p>
+
+<input type="text" id="captionInput" placeholder="Enter text for image">
+
+<input type="file" id="photoInput" accept="image/*" multiple>
 
 <div class="gallery" id="gallery"></div>
 
-<p class="note">Your uploaded photos will stay visible until the page is refreshed.</p>
+<p class="note">
+Photos and text will stay even after refresh.
+</p>
 
-  </div>  <script>
-    const photoInput = document.getElementById('photoInput');
-    const gallery = document.getElementById('gallery');
+</div>
 
-    photoInput.addEventListener('change', function () {
-      const files = this.files;
+<script>
 
-      for (let i = 0; i < files.length; i++) {
+const photoInput = document.getElementById('photoInput');
+const gallery = document.getElementById('gallery');
+const captionInput = document.getElementById('captionInput');
+
+window.onload = function(){
+
+    let savedPhotos =
+    JSON.parse(localStorage.getItem('photos')) || [];
+
+    savedPhotos.forEach(item => {
+        createPhoto(item.image,item.caption);
+    });
+
+};
+
+photoInput.addEventListener('change',function(){
+
+    const files = this.files;
+
+    let savedPhotos =
+    JSON.parse(localStorage.getItem('photos')) || [];
+
+    for(let i=0;i<files.length;i++){
+
         const file = files[i];
 
-        if (file.type.startsWith('image/')) {
-          const reader = new FileReader();
+        if(file.type.startsWith('image/')){
 
-          reader.onload = function (e) {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            gallery.appendChild(img);
-          };
+            const reader = new FileReader();
 
-          reader.readAsDataURL(file);
+            reader.onload = function(e){
+
+                const imageData = e.target.result;
+
+                const captionText = captionInput.value;
+
+                createPhoto(imageData,captionText);
+
+                savedPhotos.push({
+                    image:imageData,
+                    caption:captionText
+                });
+
+                localStorage.setItem(
+                    'photos',
+                    JSON.stringify(savedPhotos)
+                );
+
+            };
+
+            reader.readAsDataURL(file);
+
         }
-      }
-    });
-  </script></body>
-</html>
 
+    }
+
+});
+
+function createPhoto(imageSrc,captionText){
+
+    const box = document.createElement('div');
+
+    box.className = 'photo-box';
+
+    const img = document.createElement('img');
+
+    img.src = imageSrc;
+
+    const caption = document.createElement('div');
+
+    caption.className = 'caption';
+
+    caption.innerText = captionText;
+
+    box.appendChild(img);
+
+    box.appendChild(caption);
+
+    gallery.appendChild(box);
+
+}
+
+</script>
+
+</body>
+</html>
